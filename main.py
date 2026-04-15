@@ -10,4 +10,11 @@ gh -> github, yt -> youtube, yt something -> searches for something in youtube e
 """
 
 keys = input("KEYBIND: ")
-if keys == "": keys = "ctrl+shift+c" 
+if keys == "": keys = "ctrl+shift+c" # Default hotkey for now
+
+def keyboard_listener():
+    print("HOTKEY DETECTED")
+
+keyboard.add_hotkey(keys, keyboard_listener)
+print("Listening for keys, press ESC to quit.")
+keyboard.wait("esc")
