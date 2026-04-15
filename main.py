@@ -1,23 +1,29 @@
 import customtkinter as ct
-import keyboard
-import threading
 import webbrowser
-import time
+import threading
+import keyboard
+
 """
 TODO:
--> Make it check for each keyboard letter?
--> Code a small window where I can put shortcuts in
-gh -> github, yt -> youtube, yt something -> searches for something in youtube etc.
--> Maybe open up a cmd window who knows
+-> JSON config so so I don't end up with 50 if and elses
+
 """
 
 window = ct.CTk()
-window.geometry("100x50")
+window.geometry("90x30")
 window.resizable(False, False)
+window.overrideredirect(True)
 frame = ct.CTkFrame(master=window)
+frame.pack()
 
-entry_input = ct.CTkEntry(window, width=95, height=45)
-entry_input.pack()
+entry_input = ct.CTkEntry(frame, width=80, height=25)
+entry_input.pack(side="left")
+
+def close_window():
+    window.withdraw()
+
+close_button = ct.CTkButton(frame, width=5, height=10, command=close_window, text="x")
+close_button.pack(side="left")
 
 window.withdraw()
 
@@ -33,16 +39,21 @@ def show_window():
 
 def keyboard_listener(event=None):
     text = entry_input.get()
-    #print(f"HOTKEY DETECTED {text}")
 
     if text == "gh":
         webbrowser.open("https://github.com")
-        window.withdraw()
+
+    elif text == "yt":
+        webbrowser.open("https://www.youtube.com/")
 
     elif text.startswith("yt "):
         search = text[3:]
         url = f"https://www.youtube.com/results?search_query={search}"
         webbrowser.open(url)
+
+    elif text.startswith("g "):
+        search = text[2:]
+        webbrowser.open(f"https://www.google.com/search?q={search}")
 
     entry_input.delete(0, "end")
     window.withdraw()
