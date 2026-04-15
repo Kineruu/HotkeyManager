@@ -2,16 +2,17 @@ import customtkinter as ct
 import webbrowser
 import threading
 import keyboard
+import json
 
-"""
-TODO:
--> JSON config so so I don't end up with 50 if and elses
-"""
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+shortcuts = config["SHORTCUTS"]
 
 window = ct.CTk()
 window.geometry("90x30")
 window.resizable(False, False)
-window.overrideredirect(True)
+
 frame = ct.CTkFrame(master=window)
 frame.pack()
 
@@ -26,45 +27,42 @@ close_button.pack(side="left")
 
 window.withdraw()
 
-#keys = input("KEYBIND: ")
-#if keys == "": keys = "ctrl+shift+c" # Default hotkey for now
-keys = "ctrl+shift+c"
+HOTKEY = config["HOTKEY"]
 
 def show_window():
-    #print("Works") # Debugging purposes
     window.deiconify()
-    window.update()
+    window.update_idletasks()
     window.lift()
-    window.focus_force()
-    entry_input.focus()
+    
+    window.attributes("-topmost", True)
+    window.after(100, lambda: window.attributes("-topmost", False))
 
-def keyboard_listener(event=None):
-    text = entry_input.get()
+    entry_input.focus_force()
+    entry_input.delete(0, "end")
 
-    if text == "gh":
-        webbrowser.open("https://github.com")
-
-    elif text == "yt":
-        webbrowser.open("https://www.youtube.com/")
-
-    elif text.startswith("yt "):
-        search = text[3:]
-        url = f"https://www.youtube.com/results?search_query={search}"
-        webbrowser.open(url)
-
-    elif text.startswith("g "):
+def run_command(text):
+    if text in shortcuts:
+        webbrowser.open(shortcuts[text])
+        return
+    
+    if text.startswith("g "):
         search = text[2:]
         webbrowser.open(f"https://www.google.com/search?q={search}")
+        return
 
+    if text.startswith("yt "):
+        search = text[3:]
+        webbrowser.open(f"https://www.youtube.com/results?search_query={search}")
+        return
+
+def on_enter(event=None):
+    text = entry_input.get().strip()
+    run_command(text)
     entry_input.delete(0, "end")
     window.withdraw()
-    
-entry_input.bind("<Return>", keyboard_listener)
 
-def start_listening():
-    keyboard.add_hotkey(keys, show_window)
-    keyboard.wait()
+entry_input.bind("<Return>", on_enter)
 
-threading.Thread(target=start_listening, daemon=True).start()
+keyboard.add_hotkey(HOTKEY, show_window)
 
 window.mainloop()

@@ -1,0 +1,11 @@
+{
+    "HOTKEY": "ctrl+shift+z",
+    "SHORTCUTS": {
+        "gh": "https://github.com",
+        "yt": "https://www.youtube.com"
+    },
+    "SEARCH": {
+        "g": "https://www.google.com/search?q=",
+        "yt": "https://www.youtube.com/results?search_query="
+    }
+}
