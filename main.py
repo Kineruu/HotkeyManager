@@ -33,13 +33,19 @@ def show_window():
 
 def keyboard_listener(event=None):
     text = entry_input.get()
-    print(f"HOTKEY DETECTED {text}")
+    #print(f"HOTKEY DETECTED {text}")
 
     if text == "gh":
         webbrowser.open("https://github.com")
         window.withdraw()
-    else:
-        window.withdraw()
+
+    elif text.startswith("yt "):
+        search = text[3:]
+        url = f"https://www.youtube.com/results?search_query={search}"
+        webbrowser.open(url)
+
+    entry_input.delete(0, "end")
+    window.withdraw()
     
 entry_input.bind("<Return>", keyboard_listener)
 
