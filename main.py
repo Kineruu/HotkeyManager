@@ -6,7 +6,6 @@ import keyboard
 """
 TODO:
 -> JSON config so so I don't end up with 50 if and elses
-
 """
 
 window = ct.CTk()
@@ -32,7 +31,9 @@ window.withdraw()
 keys = "ctrl+shift+c"
 
 def show_window():
+    #print("Works") # Debugging purposes
     window.deiconify()
+    window.update()
     window.lift()
     window.focus_force()
     entry_input.focus()
