@@ -1,7 +1,9 @@
 
+from pynput import keyboard as kb
+
 import customtkinter as ct
 import webbrowser
-import keyboard
+import threading
 import json
 
 with open("config.json", "r") as f:
@@ -38,7 +40,7 @@ def show_window():
     window.after(50, lambda: entry_input.icursor("end"))
 
     window.after(100, lambda: window.attributes("-topmost", False))
-    
+
     entry_input.delete(0, "end")
 
 def run_command(text):
@@ -64,6 +66,16 @@ def on_enter(event=None):
 
 entry_input.bind("<Return>", on_enter)
 
-keyboard.add_hotkey(HOTKEY, show_window)
+def replace_hotkey(hotkey: str):
+    hotkey = hotkey.lower()
+    return hotkey.replace("ctrl", "<ctrl>").replace("shift", "<shift>").replace("alt", "<alt>")
 
+def start_hotkey():
+    replace_hotkey(HOTKEY)
+    hotkey = kb.GlobalHotKeys({
+        "<ctrl>+<shift>+z": show_window
+    })
+    hotkey.run()
+
+threading.Thread(target=start_hotkey, daemon=True).start()
 window.mainloop()

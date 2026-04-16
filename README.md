@@ -12,4 +12,5 @@ How to properly use it:
 In the cloned repository, open CMD and type:
 - python main.py
 
-And click enter, it SHOULD work everywhere.
+And click enter, it SHOULD work everywhere
+Hotkey can be changed in "config.json" file.
