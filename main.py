@@ -1,6 +1,6 @@
+
 import customtkinter as ct
 import webbrowser
-import threading
 import keyboard
 import json
 
@@ -34,10 +34,11 @@ def show_window():
     window.update_idletasks()
     window.lift()
     
-    window.attributes("-topmost", True)
-    window.after(100, lambda: window.attributes("-topmost", False))
+    window.after(50, lambda: entry_input.focus_force())
+    window.after(50, lambda: entry_input.icursor("end"))
 
-    entry_input.focus_force()
+    window.after(100, lambda: window.attributes("-topmost", False))
+    
     entry_input.delete(0, "end")
 
 def run_command(text):

@@ -7,4 +7,9 @@ For now it supports:
 - g something - googles something
 
 Press enter if you want to close the window
-I recommend opening this as an administrator if possible in case it doesn't work
+
+How to properly use it:
+In the cloned repository, open CMD and type:
+- python main.py
+
+And click enter, it SHOULD work everywhere.
