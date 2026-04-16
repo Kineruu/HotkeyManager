@@ -1,5 +1,5 @@
 # HotkeyManager
-Hotkey is for now: ctrl + shift + z, will add a customisable option later
+The default hotkey is: ctrl + shift + z. You can change it in "config.json" file.
 For now it supports:
 - gh - opens up github
 - yt - opens up youtube
