@@ -71,9 +71,9 @@ def replace_hotkey(hotkey: str):
     return hotkey.replace("ctrl", "<ctrl>").replace("shift", "<shift>").replace("alt", "<alt>")
 
 def start_hotkey():
-    replace_hotkey(HOTKEY)
+    formatted_hotkey = replace_hotkey(HOTKEY)
     hotkey = kb.GlobalHotKeys({
-        "<ctrl>+<shift>+z": show_window
+        formatted_hotkey: show_window
     })
     hotkey.run()
 
