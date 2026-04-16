@@ -46,19 +46,19 @@ def focus_entry_box():
     entry_input.select_range(0, "end")
 
 def run_command(text):
-    if text in shortcuts:
-        webbrowser.open(shortcuts[text])
-        return
-    
-    if text.startswith("g "):
-        search = text[2:]
-        webbrowser.open(f"https://www.google.com/search?q={search}")
+    part = text.split(" ", 1)
+    command = part[0]
+
+    if command in config["SEARCH"] and len(part) > 1:
+        search = part[1]
+        base_url = config["SEARCH"][command]
+        webbrowser.open(base_url + search)
         return
 
-    if text.startswith("yt "):
-        search = text[3:]
-        webbrowser.open(f"https://www.youtube.com/results?search_query={search}")
+    if command in shortcuts:
+        webbrowser.open(shortcuts[command])
         return
+
 
 def on_enter(event=None):
     text = entry_input.get().strip()
