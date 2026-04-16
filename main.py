@@ -18,14 +18,11 @@ window.resizable(False, False)
 frame = ct.CTkFrame(master=window)
 frame.pack()
 
+ct.set_appearance_mode("dark")
+ct.set_default_color_theme("dark-blue")
+
 entry_input = ct.CTkEntry(frame, width=80, height=25)
 entry_input.pack(side="left")
-
-def close_window():
-    window.withdraw()
-
-close_button = ct.CTkButton(frame, width=5, height=10, command=close_window, text="x")
-close_button.pack(side="left")
 
 window.withdraw()
 
@@ -34,14 +31,19 @@ HOTKEY = config["HOTKEY"]
 def show_window():
     window.deiconify()
     window.update_idletasks()
-    window.lift()
-    
-    window.after(50, lambda: entry_input.focus_force())
-    window.after(50, lambda: entry_input.icursor("end"))
 
+    window.attributes("-topmost", True)
+    window.lift()
+
+    window.after(150, lambda: focus_entry_box())
     window.after(100, lambda: window.attributes("-topmost", False))
 
     entry_input.delete(0, "end")
+
+def focus_entry_box():
+    entry_input.focus_force()
+    entry_input.icursor("end")
+    entry_input.select_range(0, "end")
 
 def run_command(text):
     if text in shortcuts:
@@ -64,6 +66,7 @@ def on_enter(event=None):
     entry_input.delete(0, "end")
     window.withdraw()
 
+window.bind("<Escape>", lambda e: window.withdraw())
 entry_input.bind("<Return>", on_enter)
 
 def replace_hotkey(hotkey: str):
