@@ -12,17 +12,28 @@ with open("config.json", "r") as f:
 shortcuts = config["SHORTCUTS"]
 
 window = ct.CTk()
-window.geometry("90x30")
+#window.geometry("220x40")
 window.resizable(False, False)
+window.overrideredirect(True)
 
-frame = ct.CTkFrame(master=window)
-frame.pack()
+frame = ct.CTkFrame(window, corner_radius=5)
+frame.pack(expand=True, fill="both", padx=4, pady=4)
 
 ct.set_appearance_mode("dark")
 ct.set_default_color_theme("dark-blue")
 
-entry_input = ct.CTkEntry(frame, width=80, height=25)
-entry_input.pack(side="left")
+entry_input = ct.CTkEntry(frame, height=80, border_width=0)
+entry_input.pack(side="left", fill="both", expand=True, padx=(6, 2), pady=6)
+
+def close_window(): window.withdraw()
+
+close_button = ct.CTkButton(frame, text="x", width=20, height=20, command=close_window, fg_color="transparent", hover_color="#333333")
+close_button.pack(side="right", padx=(0, 6), pady=6)
+
+window.update()
+x = (window.winfo_screenwidth() // 2) - 110
+y = (window.winfo_screenheight() // 2) - 20
+window.geometry(f"220x40+{x}+{y}")
 
 window.withdraw()
 
@@ -58,7 +69,6 @@ def run_command(text):
     if command in shortcuts:
         webbrowser.open(shortcuts[command])
         return
-
 
 def on_enter(event=None):
     text = entry_input.get().strip()
