@@ -1,5 +1,5 @@
 # HotkeyManager
-Hotkey is for now: ctrl + shift + c, will add a customisable option later
+Hotkey is for now: ctrl + shift + z, will add a customisable option later
 For now it supports:
 - gh - opens up github
 - yt - opens up youtube
