@@ -45,6 +45,8 @@ window.withdraw()
 # Basically what keys you have to press to show the window
 HOTKEY = config["HOTKEY"]
 DEFAULT_PREFIX = config["DEFAULT_PREFIX"]
+history = []
+history_number = 0
 
 def show_window():
     window.deiconify() # Show window
@@ -92,12 +94,52 @@ def run_command(text):
 
 def on_enter(event=None):
     text = entry_input.get().strip() # Get text from the entry box
+    history.append(text)
     run_command(text) 
     entry_input.delete(0, "end") # Clears input
     window.withdraw() # Hiddens the window
 
+def on_up_arrow(event=None):
+    global history_number
+
+    if not history: # If there's no history, just do nothing
+        return 
+    
+    history_number += 1 # Increasing the "history_number" variable by 1
+
+    # So it doesn't go past oldest command
+    if history_number > len(history):
+        history_number = len(history)
+    
+    # Clears the input
+    entry_input.delete(0, "end")
+    # history[-1] = newest command
+    # history[-2] = previous command
+    entry_input.insert(0, history[-history_number])
+    return
+
+
+def on_down_arrow(event=None):
+    global history_number
+    if not history:
+        return 
+
+    history_number -= 1 # Move "forward" in history
+
+    if history_number < 1:
+        history_number = 1
+        entry_input.delete(0, "end")
+        return
+
+    entry_input.delete(0, "end")
+    entry_input.insert(0, history[-history_number])
+    return
+
+
 window.bind("<Escape>", lambda e: window.withdraw()) # Pressing escape hides the window
 entry_input.bind("<Return>", on_enter) # Enter key runs the command in the entry box
+entry_input.bind("<Up>", on_up_arrow)
+entry_input.bind("<Down>", on_down_arrow)
 
 # Converts config format to pynput one
 def replace_hotkey(hotkey: str):

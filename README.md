@@ -12,5 +12,7 @@ How to properly use it:
 In the cloned repository, open CMD and type:
 - python main.py
 
+You can use UP and DOWN arrow to go through commands history
+
 And click enter, it SHOULD work everywhere
 Hotkey can be changed in "config.json" file.
