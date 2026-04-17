@@ -44,6 +44,7 @@ window.withdraw()
 
 # Basically what keys you have to press to show the window
 HOTKEY = config["HOTKEY"]
+DEFAULT_PREFIX = config["DEFAULT_PREFIX"]
 
 def show_window():
     window.deiconify() # Show window
@@ -61,7 +62,7 @@ def show_window():
 # Focus and select text inside entry
 def focus_entry_box():
     entry_input.focus_force()
-    
+
     entry_input.icursor("end") # Move cursor to the end
     entry_input.select_range(0, "end") # Select all text
 
@@ -80,6 +81,14 @@ def run_command(text):
     if command in shortcuts:
         webbrowser.open(shortcuts[command])
         return
+    
+    if not text:
+        return
+
+    if DEFAULT_PREFIX in config["SEARCH"]: # Checks whether the default prefix is in config
+        base_url = config["SEARCH"][DEFAULT_PREFIX]
+        webbrowser.open(base_url + text)
+        return 
 
 def on_enter(event=None):
     text = entry_input.get().strip() # Get text from the entry box
