@@ -1,7 +1,7 @@
 
 # Imports
 from pynput import keyboard as kb 
-import webbrowser, threading, json
+import webbrowser, threading, json, win32gui, win32con, win32api, win32process, subprocess, time
 import customtkinter as ct
 
 # Loading config
@@ -18,6 +18,7 @@ history_number = 0
 
 # Customtinker settings
 window = ct.CTk() # Setting up the window
+window.title("Hotkey Manager GUI")
 window.resizable(False, False) # So it can't be expanded.
 window.overrideredirect(True) # Removes title bar
 
@@ -48,30 +49,67 @@ window.geometry(f"220x40+{x}+{y}")
 # Hiding it
 window.withdraw()
 
-def focus_window():
-    window.deiconify() # Show window
-    window.lift() # Show it above other windows
-    window.attributes("-topmost", True) # Bring it to the front
-
+def focus_window_logic():
+    # 1. Reveals window
+    window.deiconify()
+    
+    # Grabbing the window's id that Windows assigned to my CTk
+    my_hwnd = window.winfo_id() 
+    # Asks windows what window is the user looking at right now
+    fore_hwnd = win32gui.GetForegroundWindow()
+    # Gets the thread ID the python script is running in
+    thread_it = win32api.GetCurrentThreadId()
+    fore_thread_id, _ = win32process.GetWindowThreadProcessId(fore_hwnd)
+    
+    # 3. Attach Thread Input
+    if thread_it != fore_thread_id:
+        try:
+            # Links the script
+            win32process.AttachThreadInput(fore_thread_id, thread_it, True)
+            # Windows allows me to put the window in front
+            win32gui.SetForegroundWindow(my_hwnd)
+            win32gui.SetFocus(my_hwnd)
+            # Unlinks the script
+            win32process.AttachThreadInput(fore_thread_id, thread_it, False)
+        except:
+            pass
+    
+    # 4. Force Topmost briefly
+    window.attributes("-topmost", True)
+    
+    # 5. Force Keyboard Focus
     entry_input.focus_force()
-    entry_input.select_range(0, "end") # Select all text
+    entry_input.select_range(0, "end")
+    
+    # 6. Release Topmost so it doesn't stay stuck
+    window.after(200, lambda: window.attributes("-topmost", False))
+
+def focus_window():
+    window.after(0, focus_window_logic)
+
+def focus_window_by_pid(pid):
+    def callback(hwnd, _):
+        # Gets the thread ID
+        _, found_pid = win32process.GetWindowThreadProcessId(hwnd)
+        if found_pid == pid and win32gui.IsWindowVisible(hwnd):
+            win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+            win32gui.SetForegroundWindow(hwnd)
+            return False 
+        return True
+    win32gui.EnumWindows(callback, None)
 
 def run_command(text: str):
-    if not text:
-        return
-    
+    if not text: return
     command, *rest = text.split(" ", 1)
     argument = rest[0] if rest else ""
 
     # Checks whether it's a search command first (for example yt cats)
     if command in SEARCH and argument:
         webbrowser.open(SEARCH[command] + argument)
-        return
 
     # If it's a shortcut (gh -> github)
     if command in SHORTCUTS:
         webbrowser.open(SHORTCUTS[command])
-        return
 
     if DEFAULT_PREFIX in SEARCH:
         webbrowser.open(SEARCH[DEFAULT_PREFIX] + text)
@@ -84,9 +122,10 @@ def on_enter(event=None):
         history.append(text)
         history_number = len(history)
 
-    run_command(text) 
-    entry_input.delete(0, "end") # Clears input
-    window.withdraw() # Hiddens the window
+    window.withdraw() 
+    window.update()
+    run_command(text)
+    entry_input.delete(0, "end")
 
 def moving_history(step: int):
     global history_number
@@ -98,18 +137,30 @@ def moving_history(step: int):
 
 # Converts config format to pynput one
 def replace_hotkey(hotkey: str):
-    return hotkey.lower().replace("ctrl", "<ctrl>").replace("shift", "<shift>").replace("alt", "<alt>")
+    # Ensure clean pynput format: ctrl+alt+z -> <ctrl>+<alt>+z
+    parts = hotkey.lower().split('+')
+    formatted = []
+    for p in parts:
+        if p in ['ctrl', 'alt', 'shift', 'win']:
+            formatted.append(f"<{p}>")
+        else:
+            formatted.append(p)
+    return "+".join(formatted)
 
 def start_hotkey():
-    # Global hotkey listener
-    kb.GlobalHotKeys({ replace_hotkey(HOTKEY): focus_window }).run()
+    try:
+        hk_string = replace_hotkey(HOTKEY)
+        with kb.GlobalHotKeys({hk_string: focus_window}) as h:
+            h.join()
+    except Exception as e:
+        print(f"Hotkey Error: {e}")
 
-threading.Thread(target=start_hotkey, daemon=True).start() # Listening in the background
+# Start listener
+threading.Thread(target=start_hotkey, daemon=True).start()
 
-window.bind("<Escape>", lambda e: window.withdraw()) # Pressing escape hides the window
-entry_input.bind("<Return>", on_enter) # Enter key runs the command in the entry box
+window.bind("<Escape>", lambda e: window.withdraw())
+entry_input.bind("<Return>", on_enter)
 entry_input.bind("<Up>", lambda e: moving_history(1))
 entry_input.bind("<Down>", lambda e: moving_history(-1))
 
-# Starts the GUI loop
 window.mainloop()
