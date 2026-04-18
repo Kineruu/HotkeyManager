@@ -108,10 +108,10 @@ def run_command(text: str):
         webbrowser.open(SEARCH[command] + argument)
 
     # If it's a shortcut (gh -> github)
-    if command in SHORTCUTS:
+    elif command in SHORTCUTS:
         webbrowser.open(SHORTCUTS[command])
 
-    if DEFAULT_PREFIX in SEARCH:
+    elif DEFAULT_PREFIX in SEARCH:
         webbrowser.open(SEARCH[DEFAULT_PREFIX] + text)
 
 def on_enter(event=None):
