@@ -1,7 +1,7 @@
 
 # Imports
 from pynput import keyboard as kb 
-import webbrowser, threading, json, win32gui, win32con, win32api, win32process, subprocess, time
+import webbrowser, threading, json, win32gui, win32con, win32api, win32process
 import customtkinter as ct
 
 # Loading config
