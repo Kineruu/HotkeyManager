@@ -1,7 +1,8 @@
 {
     "HOTKEY": "ctrl+shift+z",
     "MAPPED_HOTKEYS": {
-        "ctrl+shift+c": "calc"
+        "ctrl+shift+c": "calc",
+        "ctrl+shift+d": "dl"
     },
     "SHORTCUTS": {
         "gh": "https://github.com",
