@@ -1,5 +1,8 @@
 {
     "HOTKEY": "ctrl+shift+z",
+    "MAPPED_HOTKEYS": {
+        "ctrl+shift+c": "calc"
+    },
     "SHORTCUTS": {
         "gh": "https://github.com",
         "yt": "https://www.youtube.com",

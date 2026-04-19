@@ -19,6 +19,7 @@ DEFAULT_PREFIX = config["DEFAULT_PREFIX"]
 SEARCH = config["SEARCH"]
 SHORTCUTS = config["SHORTCUTS"]
 FOLDERS = config["FILES"]
+MAPPED_HOTKEYS = config["MAPPED_HOTKEYS"]
 
 history = []
 history_number = 0
@@ -161,10 +162,17 @@ def replace_hotkey(hotkey: str):
     return "+".join(formatted)
 
 def start_hotkey():
+    hotkey_map = {}
     try:
-        hk_string = replace_hotkey(HOTKEY)
-        with kb.GlobalHotKeys({hk_string: focus_window}) as h:
+        main_hotkey = replace_hotkey(HOTKEY)
+        hotkey_map[main_hotkey] = focus_window
+
+        for hotkey, command in MAPPED_HOTKEYS.items():
+            formatted_hotkey = replace_hotkey(hotkey)
+            hotkey_map[formatted_hotkey] = lambda cmd = command: run_command(cmd)
+        with kb.GlobalHotKeys(hotkey_map) as h:
             h.join()
+            
     except Exception as e:
         print(f"Hotkey Error: {e}")
 
