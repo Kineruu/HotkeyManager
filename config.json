@@ -12,5 +12,9 @@
         "rdr": "https://reddit.com/r/",
         "rdu": "https://reddit.com/u/"
     },
+    "FOLDERS": {
+        "dl": "C:\\Users\\Me\\Downloads",
+        "mc": "C:\\Users\\Me\\AppData\\Roaming\\.minecraft"
+    },
     "DEFAULT_PREFIX": "g"
 }

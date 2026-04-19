@@ -18,6 +18,7 @@ HOTKEY = config["HOTKEY"]
 DEFAULT_PREFIX = config["DEFAULT_PREFIX"]
 SEARCH = config["SEARCH"]
 SHORTCUTS = config["SHORTCUTS"]
+FOLDERS = config.get("FOLDERS", {})
 
 history = []
 history_number = 0
@@ -109,7 +110,11 @@ def run_command(text: str):
     command, *rest = text.split(" ", 1)
     argument = rest[0] if rest else ""
 
-    
+    if command in FOLDERS:
+        folder_path = FOLDERS[command]
+        if os.path.exists(folder_path):
+            os.startfile(folder_path)
+        return
 
     # Checks whether it's a search command first (for example yt cats)
     if command in SEARCH and argument:
