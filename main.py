@@ -8,12 +8,6 @@ import customtkinter as ct
 with open("config.json", "r") as f: 
     config = json.load(f)
 
-"""
-TODO:
-- folder support
-- custom key mapping
-"""
-
 HOTKEY = config["HOTKEY"]
 DEFAULT_PREFIX = config["DEFAULT_PREFIX"]
 SEARCH = config["SEARCH"]
@@ -172,7 +166,7 @@ def start_hotkey():
             hotkey_map[formatted_hotkey] = lambda cmd = command: run_command(cmd)
         with kb.GlobalHotKeys(hotkey_map) as h:
             h.join()
-            
+
     except Exception as e:
         print(f"Hotkey Error: {e}")
 
