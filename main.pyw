@@ -61,7 +61,7 @@ def quit_window(icon, item):
 def small_icon():
     image = Image.new("RGB", (64, 64), color=(73, 109, 137))
     menu = pystray.Menu(pystray.MenuItem('Quit', quit_window))
-    icon = pystray.Icon("HotkeyManager", image, "Hotkey Manager,", menu)
+    icon = pystray.Icon("HotkeyManager", image, "Hotkey Manager", menu)
     icon.run()
 
 def focus_window_logic():
