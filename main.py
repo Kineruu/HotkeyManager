@@ -1,12 +1,18 @@
 
 # Imports
 from pynput import keyboard as kb 
-import webbrowser, threading, json, win32gui, win32con, win32api, win32process
+import webbrowser, threading, json, win32gui, win32con, win32api, win32process, os
 import customtkinter as ct
 
 # Loading config
 with open("config.json", "r") as f: 
     config = json.load(f)
+
+"""
+TODO:
+- folder support
+- custom key mapping
+"""
 
 HOTKEY = config["HOTKEY"]
 DEFAULT_PREFIX = config["DEFAULT_PREFIX"]
@@ -102,6 +108,8 @@ def run_command(text: str):
     if not text: return
     command, *rest = text.split(" ", 1)
     argument = rest[0] if rest else ""
+
+    
 
     # Checks whether it's a search command first (for example yt cats)
     if command in SEARCH and argument:
