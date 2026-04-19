@@ -18,7 +18,7 @@ HOTKEY = config["HOTKEY"]
 DEFAULT_PREFIX = config["DEFAULT_PREFIX"]
 SEARCH = config["SEARCH"]
 SHORTCUTS = config["SHORTCUTS"]
-FOLDERS = config.get("FOLDERS", {})
+FOLDERS = config["FILES"]
 
 history = []
 history_number = 0

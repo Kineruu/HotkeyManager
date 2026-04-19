@@ -12,9 +12,10 @@
         "rdr": "https://reddit.com/r/",
         "rdu": "https://reddit.com/u/"
     },
-    "FOLDERS": {
+    "FILES": {
         "dl": "C:\\Users\\Me\\Downloads",
-        "mc": "C:\\Users\\Me\\AppData\\Roaming\\.minecraft"
+        "mc": "C:\\Users\\Me\\AppData\\Roaming\\.minecraft",
+        "calc": "C:\\Windows\\System32\\calc.exe"
     },
     "DEFAULT_PREFIX": "g"
 }
