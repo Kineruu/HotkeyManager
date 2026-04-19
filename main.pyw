@@ -1,7 +1,8 @@
 
 # Imports
 from pynput import keyboard as kb 
-import webbrowser, threading, json, win32gui, win32con, win32api, win32process, os
+from PIL import Image
+import webbrowser, threading, json, win32gui, win32con, win32api, win32process, os, pystray
 import customtkinter as ct
 
 # Loading config
@@ -17,6 +18,7 @@ MAPPED_HOTKEYS = config["MAPPED_HOTKEYS"]
 
 history = []
 history_number = 0
+running = True
 
 # Customtinker settings
 window = ct.CTk() # Setting up the window
@@ -51,6 +53,17 @@ window.geometry(f"220x40+{x}+{y}")
 # Hiding it
 window.withdraw()
 
+def quit_window(icon, item):
+    if icon: icon.stop()
+    window.after(0, window.destroy)
+    os._exit(0)
+
+def small_icon():
+    image = Image.new("RGB", (64, 64), color=(73, 109, 137))
+    menu = pystray.Menu(pystray.MenuItem('Quit', quit_window))
+    icon = pystray.Icon("HotkeyManager", image, "Hotkey Manager,", menu)
+    icon.run()
+
 def focus_window_logic():
     # 1. Reveals window
     window.deiconify()
@@ -76,18 +89,20 @@ def focus_window_logic():
         except:
             pass
     
+    window.update_idletasks()
+    window.update()
     # 4. Force Topmost briefly
     window.attributes("-topmost", True)
     
     # 5. Force Keyboard Focus
     entry_input.focus_force()
+    entry_input.delete(0, "end")
     entry_input.select_range(0, "end")
     
     # 6. Release Topmost so it doesn't stay stuck
     window.after(200, lambda: window.attributes("-topmost", False))
 
-def focus_window():
-    window.after(0, focus_window_logic)
+def focus_window(): window.after(0, focus_window_logic)
 
 def focus_window_by_pid(pid):
     def callback(hwnd, _):
@@ -107,33 +122,30 @@ def run_command(text: str):
 
     if command in FOLDERS:
         folder_path = FOLDERS[command]
-        if os.path.exists(folder_path):
-            os.startfile(folder_path)
+        if os.path.exists(folder_path): os.startfile(folder_path)
         return
 
     # Checks whether it's a search command first (for example yt cats)
-    if command in SEARCH and argument:
-        webbrowser.open(SEARCH[command] + argument)
+    if command in SEARCH and argument: webbrowser.open(SEARCH[command] + argument)
 
     # If it's a shortcut (gh -> github)
-    elif command in SHORTCUTS:
-        webbrowser.open(SHORTCUTS[command])
+    elif command in SHORTCUTS: webbrowser.open(SHORTCUTS[command])
 
-    elif DEFAULT_PREFIX in SEARCH:
-        webbrowser.open(SEARCH[DEFAULT_PREFIX] + text)
+    elif DEFAULT_PREFIX in SEARCH: webbrowser.open(SEARCH[DEFAULT_PREFIX] + text)
+
+def run(text): window.withdraw(); run_command(text)
 
 def on_enter(event=None):
     global history_number
 
     text = entry_input.get().strip() # Get text from the entry box
+    entry_input.delete(0, "end")
     if text:
         history.append(text)
         history_number = len(history)
+    window.after(1, lambda: run(text))
 
-    window.withdraw() 
-    window.update()
-    run_command(text)
-    entry_input.delete(0, "end")
+    return "break"
 
 def moving_history(step: int):
     global history_number
@@ -170,12 +182,14 @@ def start_hotkey():
     except Exception as e:
         print(f"Hotkey Error: {e}")
 
-# Start listener
-threading.Thread(target=start_hotkey, daemon=True).start()
-
 window.bind("<Escape>", lambda e: window.withdraw())
 entry_input.bind("<Return>", on_enter)
 entry_input.bind("<Up>", lambda e: moving_history(1))
 entry_input.bind("<Down>", lambda e: moving_history(-1))
 
-window.mainloop()
+if __name__ == "__main__":
+    threading.Thread(target=start_hotkey, daemon=True).start()
+    threading.Thread(target=small_icon, daemon=True).start()
+    window.protocol("WM_DELETE_WINDOW", lambda: quit_window(None, None))
+    try: window.mainloop()
+    except KeyboardInterrupt: os._exit(0)
