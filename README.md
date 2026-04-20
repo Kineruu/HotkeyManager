@@ -6,6 +6,8 @@ For now it supports:
 - yt something - searches something in youtube
 - g something - googles something
 
+HOW TO ADD/EDIT/REMOVE HOTKEYS/COMMANDS IN HOTKEYS.TXT
+
 Press enter if you want to close the window
 
 How to properly use it:

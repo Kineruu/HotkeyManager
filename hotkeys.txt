@@ -1,0 +1,33 @@
+As you might notice, the main hotkey is CTRL + SHIFT + Z.
+If you want to change that, please do that in config.json file.
+By default the line with the main hotkey should look like this:
+"HOTKEY": "ctrl+shift+z"
+DO NOT change anything other than what is the "" ON THE RIGHT SIDE
+"HOTKEY": "YOUR NEW HOTKEY". 
+It can be anything from one key to multiple. Put + between keys if there is more than one, example:
+alt+shift, ctrl+space, alt+shift+z, ctrl+alt+z.
+
+MAPPED_HOTKEYS:
+A similar situation as in HOTKEY but instead of putting "YOUR NEW HOTKEY" you put a command that you want to be executed
+IT HAS TO BE ADDED TO ONE OF THE OPTIONS BELOW (SHORTCUTS, SEARCHES, FILES)
+"MAPPED HOTKEY":"COMMAND THAT YOU WANT EXECUTED", for example: "ctrl+p":"pic"
+Then you add that command, since that example is a files command (at least in my case), I will add my pictures folder path to the command
+"pic":"C:\\Users\\Me\\Pictures" REMEMBER TO CHANGE \ TO \\ !!!!!
+
+ADD/EDIT/REMOVE SHORTCUTS:
+Shorts are those short commands that you don't type anything after them.
+An example of a shortcut is: "gh": "https://github.com"
+If you want to add your own shortcut, please do it in this format:
+"shortcut name (examples: dc, tw, pi, hello)":"LINK"
+DO NOT PUT FOLDER/FILES PATH IN THE SHORTCUTS
+
+ADD/EDIT/REMOVE SEARCHES:
+Those are the shortcuts with arguments after them, for example:
+"g": "https://www.google.com/search?q="
+PLEASE KEEP IN MIND THAT ANYTHING YOU PUT AFTER THE COMMAND WILL BE PUT AT THE END OF THE LINK
+The same situation as in SHORTCUTS if you want to add / edit / remove searches.
+
+FILES AND FOLDERS:
+PLEASE REMEMBER ABOUT PUTTING \\ IN THE FOLDERS PATH!!
+Example: "dl": "C:\\Users\\Me\\Downloads".
+"command name": "Folder/file path."
