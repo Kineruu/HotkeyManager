@@ -16,16 +16,24 @@ def open_settings_window(parent=None):
 
     settings_window = ct.CTkToplevel(parent)
     settings_window.title("Settings")
-    settings_window.resizable(False, False)
-    settings_window.geometry("350x300")
+    settings_window.resizable(True, False)
+    settings_window.geometry("400x350")
 
     settings_frame = ct.CTkScrollableFrame(settings_window)
     settings_frame.pack(expand=True, fill="both", padx=10, pady=(10, 0))
 
     for key, value in config.items():
-        section_label = ct.CTkLabel(settings_frame, text=key, font=("Arial", 14, "bold"))
-        section_label.pack(anchor="w", pady=(10, 2))
 
+        section_row = ct.CTkFrame(settings_frame)
+        section_row.pack(fill="x", pady=(10, 2))
+
+        section_label = ct.CTkLabel(section_row, text=key, font=("Arial", 14, "bold"))
+        section_label.pack(side="left")
+
+        if isinstance(value, dict):
+            add_button = ct.CTkButton(section_row, text="+", width=25)
+            add_button.pack(side="right")
+            
         if isinstance(value, dict):
             entries[key] = {}
 
@@ -53,9 +61,6 @@ def open_settings_window(parent=None):
         else:
             row = ct.CTkFrame(settings_frame)
             row.pack(fill="x", pady=2)
-
-            label = ct.CTkLabel(row, text=key, width=120)
-            label.pack(side="left")
 
             entry = ct.CTkEntry(row)
             entry.insert(0, str(value))
