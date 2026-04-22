@@ -1,37 +1,85 @@
 
-from pynput import keyboard as kb
-
 import customtkinter as ct
-import json, os
+import json
 
-with open("config.json", "r+") as f: 
-    config = json.load(f)
+def load_config():
+    with open("config.json", "r") as f:
+        return json.load(f)
 
-HOTKEY = config["HOTKEY"]
-DEFAULT_PREFIX = config["DEFAULT_PREFIX"]
-SEARCH = config["SEARCH"]
-SHORTCUTS = config["SHORTCUTS"]
-FOLDERS = config["FILES"]
-MAPPED_HOTKEYS = config["MAPPED_HOTKEYS"]
+def save_config(data):
+    with open("config.json", "w") as f:
+        return json.dump(data, f, indent=4)
 
-settings_window = ct.CTk()
-settings_window.title("Settings")
-settings_window.resizable(False, False)
-#settings_window.overrideredirect(True)
+def open_settings_window(parent=None):
+    config = load_config()
+    entries = {}
 
-settings_frame = ct.CTkFrame(settings_window, corner_radius=5)
-settings_frame.pack(expand=True, fill="both", padx=4, pady=4)
+    settings_window = ct.CTkToplevel(parent)
+    settings_window.title("Settings")
+    settings_window.resizable(False, False)
+    settings_window.geometry("350x300")
 
-for keys, value in config.items():
-    json_label = ct.CTkLabel(settings_frame, text=keys)
-    json_label.pack()
+    settings_frame = ct.CTkScrollableFrame(settings_window)
+    settings_frame.pack(expand=True, fill="both", padx=10, pady=(10, 0))
 
-    if isinstance(value, dict):
-        for sub_key, sub_value in value.items():
-            sub_label = ct.CTkLabel(settings_frame, text=f"{sub_key}: {sub_value}")
-            sub_label.pack()
-    else:
-        value_label = ct.CTkLabel(settings_frame, text=str(value))
-        value_label.pack()
+    for key, value in config.items():
+        section_label = ct.CTkLabel(settings_frame, text=key, font=("Arial", 14, "bold"))
+        section_label.pack(anchor="w", pady=(10, 2))
 
-settings_window.mainloop()
+        if isinstance(value, dict):
+            entries[key] = {}
+
+            for sub_key, sub_value in value.items():
+                row = ct.CTkFrame(settings_frame)
+                row.pack(fill="x", pady=2)
+
+                row.grid_columnconfigure(0, weight=1)
+                row.grid_columnconfigure(1, weight=0)
+                row.grid_columnconfigure(2, weight=1)
+
+                sub_key_entry = ct.CTkEntry(row)
+                sub_key_entry.insert(0, str(sub_key))
+                sub_key_entry.grid(row=0, column=0, sticky="ew", padx=5)
+
+                label = ct.CTkLabel(row, text=":")
+                label.grid(row=0, column=1)
+
+                sub_value_entry = ct.CTkEntry(row)
+                sub_value_entry.insert(0, str(sub_value))
+                sub_value_entry.grid(row=0, column=2, sticky="ew", padx=5)
+
+                entries[key][sub_key] = (sub_key_entry, sub_value_entry)
+
+        else:
+            row = ct.CTkFrame(settings_frame)
+            row.pack(fill="x", pady=2)
+
+            label = ct.CTkLabel(row, text=key, width=120)
+            label.pack(side="left")
+
+            entry = ct.CTkEntry(row)
+            entry.insert(0, str(value))
+            entry.pack(side="right", fill="x", expand=True)
+
+            entries[key] = entry
+
+    def on_save():
+        new_config = {}
+
+        for key, value in entries.items():
+            if isinstance(value, dict):
+                new_config[key] = {}
+
+                for _, (key_entry, val_entry) in value.items():
+                    new_key = key_entry.get()
+                    new_val = val_entry.get()
+
+                    new_config[key][new_key] = new_val
+            else:
+                new_config[key] = value.get()
+
+        save_config(new_config)
+        settings_window.destroy()
+
+    save_button = ct.CTkButton(settings_window, text="SAVE", command=on_save)
+    save_button.pack(pady=10)

@@ -34,8 +34,12 @@ frame.pack(expand=True, fill="both", padx=4, pady=4)
 ct.set_appearance_mode("dark")
 ct.set_default_color_theme("dark-blue") 
 
+def load_settings():
+    import settings_window
+    settings_window.open_settings_window()
+
 # Settings button
-settings_button = ct.CTkButton(frame, text="s", width=20, height=20, fg_color="transparent", hover_color="#333333")
+settings_button = ct.CTkButton(frame, text="s", width=20, height=20, command=load_settings, fg_color="transparent", hover_color="#333333")
 settings_button.pack(side="left", fill="both", expand=True, padx=(6, 2), pady=6)
 
 # Making the entry box, where user is able to write the commands
@@ -197,3 +201,4 @@ if __name__ == "__main__":
     window.protocol("WM_DELETE_WINDOW", lambda: quit_window(None, None))
     try: window.mainloop()
     except KeyboardInterrupt: os._exit(0)
+    
