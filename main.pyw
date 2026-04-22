@@ -34,6 +34,10 @@ frame.pack(expand=True, fill="both", padx=4, pady=4)
 ct.set_appearance_mode("dark")
 ct.set_default_color_theme("dark-blue") 
 
+# Settings button
+settings_button = ct.CTkButton(frame, text="s", width=20, height=20, fg_color="transparent", hover_color="#333333")
+settings_button.pack(side="left", fill="both", expand=True, padx=(6, 2), pady=6)
+
 # Making the entry box, where user is able to write the commands
 entry_input = ct.CTkEntry(frame, height=80, border_width=0)
 entry_input.pack(side="left", fill="both", expand=True, padx=(6, 2), pady=6)
