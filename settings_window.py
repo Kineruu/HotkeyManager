@@ -10,6 +10,38 @@ def save_config(data):
     with open("config.json", "w") as f:
         return json.dump(data, f, indent=4)
 
+def add_row(section_key, container, entries):
+    # New horizontal container (row)
+    row = ct.CTkFrame(container)
+    # Full width (fill="x")
+    row.pack(fill="x", pady=2)
+
+    row.grid_columnconfigure(0, weight=1)
+    row.grid_columnconfigure(1, weight=0)
+    row.grid_columnconfigure(2, weight=1)
+
+    # Column 0 (key) → expands
+    # Column 1 (:) → fixed
+    # Column 2 (value) → expands
+
+    key_entry = ct.CTkEntry(row)
+    # Column 0, stretches horizontally (ew), adds spacing
+    key_entry.grid(row=0, column=0, sticky="ew", padx=5)
+
+    label = ct.CTkLabel(row, text=":")
+    label.grid(row=0, column=1)
+
+    value_entry = ct.CTkEntry(row)
+    value_entry.grid(row=0, column=2, sticky="ew", padx=5)
+
+    # Exists in entries dict
+    if section_key not in entries:
+        entries[section_key] = {}
+
+    # Stores references to inputs
+    entries[section_key][f"new_{len(entries[section_key])}"] = (key_entry, value_entry)
+
+
 def open_settings_window(parent=None):
     config = load_config()
     entries = {}
@@ -27,18 +59,21 @@ def open_settings_window(parent=None):
         section_row = ct.CTkFrame(settings_frame)
         section_row.pack(fill="x", pady=(10, 2))
 
+        section_container = ct.CTkFrame(settings_frame)
+        section_container.pack(fill="x")
+
         section_label = ct.CTkLabel(section_row, text=key, font=("Arial", 14, "bold"))
         section_label.pack(side="left")
 
         if isinstance(value, dict):
-            add_button = ct.CTkButton(section_row, text="+", width=25)
+            add_button = ct.CTkButton(section_row, text="+", command=lambda k=key, c=section_container, e=entries: add_row(k, c, e), width=25)
             add_button.pack(side="right")
             
         if isinstance(value, dict):
             entries[key] = {}
 
             for sub_key, sub_value in value.items():
-                row = ct.CTkFrame(settings_frame)
+                row = ct.CTkFrame(section_container)
                 row.pack(fill="x", pady=2)
 
                 row.grid_columnconfigure(0, weight=1)
@@ -59,7 +94,7 @@ def open_settings_window(parent=None):
                 entries[key][sub_key] = (sub_key_entry, sub_value_entry)
 
         else:
-            row = ct.CTkFrame(settings_frame)
+            row = ct.CTkFrame(section_container)
             row.pack(fill="x", pady=2)
 
             entry = ct.CTkEntry(row)

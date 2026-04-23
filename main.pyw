@@ -61,13 +61,19 @@ window.geometry(f"220x40+{x}+{y}")
 # Hiding it
 window.withdraw()
 
+# Quit menu
 def quit_window(icon, item):
+    # .stop() stops the pystray thread
     if icon: icon.stop()
     window.after(0, window.destroy)
+    # Hard killing the entire thing
     os._exit(0)
 
+# The small icon in the hidden icons place
 def small_icon():
+    # Creating a small square
     image = Image.new("RGB", (64, 64), color=(73, 109, 137))
+    # Right clicking the icon, will give a quit menu option
     menu = pystray.Menu(pystray.MenuItem('Quit', quit_window))
     icon = pystray.Icon("HotkeyManager", image, "Hotkey Manager", menu)
     icon.run()
@@ -82,6 +88,7 @@ def focus_window_logic():
     fore_hwnd = win32gui.GetForegroundWindow()
     # Gets the thread ID the python script is running in
     thread_it = win32api.GetCurrentThreadId()
+    # Thread ID of the currently focused window
     fore_thread_id, _ = win32process.GetWindowThreadProcessId(fore_hwnd)
     
     # 3. Attach Thread Input
@@ -112,13 +119,16 @@ def focus_window_logic():
 
 def focus_window(): window.after(0, focus_window_logic)
 
+# Focus window by process ID
 def focus_window_by_pid(pid):
     def callback(hwnd, _):
         # Gets the thread ID
         _, found_pid = win32process.GetWindowThreadProcessId(hwnd)
+        # If PID matches and the window is visible
         if found_pid == pid and win32gui.IsWindowVisible(hwnd):
             win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
             win32gui.SetForegroundWindow(hwnd)
+            # Stops searching
             return False 
         return True
     win32gui.EnumWindows(callback, None)
