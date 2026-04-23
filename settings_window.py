@@ -46,7 +46,7 @@ def add_row(section_key, container, entries):
         if temp_key in entries[section_key]:
             del entries[section_key][temp_key]
 
-    remove_button = ct.CTkButton(row, text="-", width=25, command=remove_row)
+    remove_button = ct.CTkButton(row, text="-", width=25, command=remove_row, fg_color="transparent", bg_color=buttons_colour)
     remove_button.grid(row=0, column=3, padx=5)
 
 def open_settings_window(parent=None):
