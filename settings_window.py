@@ -19,6 +19,7 @@ def add_row(section_key, container, entries):
     row.grid_columnconfigure(0, weight=1)
     row.grid_columnconfigure(1, weight=0)
     row.grid_columnconfigure(2, weight=1)
+    row.grid_columnconfigure(3, weight=0) 
 
     # Column 0 (key) → expands
     # Column 1 (:) → fixed
@@ -34,13 +35,17 @@ def add_row(section_key, container, entries):
     value_entry = ct.CTkEntry(row)
     value_entry.grid(row=0, column=2, sticky="ew", padx=5)
 
-    # Exists in entries dict
-    if section_key not in entries:
-        entries[section_key] = {}
+    temp_key = f"new_{len(entries[section_key])}"
 
-    # Stores references to inputs
-    entries[section_key][f"new_{len(entries[section_key])}"] = (key_entry, value_entry)
+    entries[section_key][temp_key] = (key_entry, value_entry)
 
+    def remove_row():
+        row.destroy()
+        if temp_key in entries[section_key]:
+            del entries[section_key][temp_key]
+
+    remove_button = ct.CTkButton(row, text="-", width=25, command=remove_row)
+    remove_button.grid(row=0, column=3, padx=5)
 
 def open_settings_window(parent=None):
     config = load_config()
@@ -53,6 +58,10 @@ def open_settings_window(parent=None):
 
     settings_frame = ct.CTkScrollableFrame(settings_window)
     settings_frame.pack(expand=True, fill="both", padx=10, pady=(10, 0))
+
+    important_label = ct.CTkLabel(settings_frame, text="ALL CHANGES WILL APPLY \nAFTER RESTARTING THE PROGRAM")
+    important_label.pack()
+
 
     for key, value in config.items():
 
@@ -92,6 +101,14 @@ def open_settings_window(parent=None):
                 sub_value_entry.grid(row=0, column=2, sticky="ew", padx=5)
 
                 entries[key][sub_key] = (sub_key_entry, sub_value_entry)
+
+                def remove_row(k=sub_key, section=key, r=row):
+                    r.destroy()
+                    if k in entries[section]:
+                        del entries[section][k]
+
+                remove_button = ct.CTkButton(row, text="-", width=25, command=remove_row)
+                remove_button.grid(row=0, column=3, padx=5)
 
         else:
             row = ct.CTkFrame(section_container)
