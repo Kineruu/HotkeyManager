@@ -2,6 +2,8 @@
 import customtkinter as ct
 import json
 
+buttons_colour = "#333333"
+
 def load_config():
     with open("config.json", "r") as f:
         return json.load(f)
@@ -75,7 +77,7 @@ def open_settings_window(parent=None):
         section_label.pack(side="left")
 
         if isinstance(value, dict):
-            add_button = ct.CTkButton(section_row, text="+", command=lambda k=key, c=section_container, e=entries: add_row(k, c, e), width=25)
+            add_button = ct.CTkButton(section_row, text="+", command=lambda k=key, c=section_container, e=entries: add_row(k, c, e), width=25, fg_color="transparent", bg_color=buttons_colour)
             add_button.pack(side="right")
             
         if isinstance(value, dict):
@@ -107,7 +109,7 @@ def open_settings_window(parent=None):
                     if k in entries[section]:
                         del entries[section][k]
 
-                remove_button = ct.CTkButton(row, text="-", width=25, command=remove_row)
+                remove_button = ct.CTkButton(row, text="-", width=25, command=remove_row, fg_color="transparent", bg_color=buttons_colour)
                 remove_button.grid(row=0, column=3, padx=5)
 
         else:
