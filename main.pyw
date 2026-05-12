@@ -5,8 +5,10 @@ from PIL import Image
 import webbrowser, threading, json, win32gui, win32con, win32api, win32process, os, pystray
 import customtkinter as ct
 
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+
 # Loading config
-with open("config.json", "r") as f: 
+with open(os.path.join(BASE_PATH, "config.json"), "r") as f: 
     config = json.load(f)
 
 HOTKEY = config["HOTKEY"]
@@ -72,7 +74,7 @@ def quit_window(icon, item):
 # The small icon in the hidden icons place
 def small_icon():
     # Creating a small square
-    image = Image.open("icon.ico")
+    image = Image.open(os.path.join(BASE_PATH, "icon.ico"))
     # Right clicking the icon, will give a quit menu option
     menu = pystray.Menu(pystray.MenuItem('Quit', quit_window))
     icon = pystray.Icon("HotkeyManager", image, "Hotkey Manager", menu)
