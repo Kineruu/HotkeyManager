@@ -72,7 +72,7 @@ def quit_window(icon, item):
 # The small icon in the hidden icons place
 def small_icon():
     # Creating a small square
-    image = Image.new("RGB", (64, 64), color=(73, 109, 137))
+    image = Image.open("icon.ico")
     # Right clicking the icon, will give a quit menu option
     menu = pystray.Menu(pystray.MenuItem('Quit', quit_window))
     icon = pystray.Icon("HotkeyManager", image, "Hotkey Manager", menu)

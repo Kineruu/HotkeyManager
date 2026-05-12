@@ -7,7 +7,8 @@
     "SHORTCUTS": {
         "gh": "https://github.com",
         "yt": "https://www.youtube.com",
-        "rd": "https://reddit.com/"
+        "rd": "https://reddit.com/",
+        "w": "https://wikipedia.com/"
     },
     "SEARCH": {
         "g": "https://www.google.com/search?q=",
