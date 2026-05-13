@@ -5,7 +5,7 @@ from PIL import Image
 import webbrowser, threading, json, win32gui, win32con, win32api, win32process, os, pystray, sys
 import customtkinter as ct
 
-BASE_PATH = os.path.dirname(sys.executable)
+BASE_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 # Loading config
 with open(os.path.join(BASE_PATH, "config.json"), "r") as f: 
