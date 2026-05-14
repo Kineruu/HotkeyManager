@@ -176,13 +176,47 @@ def moving_history(step: int):
     entry_input.insert(0, history[-history_number])
 
 # Converts config format to pynput one
+# Long list incoming...
 def replace_hotkey(hotkey: str):
+    modifiers = {"ctrl", "alt", "shift", "win"}
+
+    special_keys = {
+        "home": "<home>",
+        "end": "<end>",
+        "page up": "<page_up>",
+        "page down": "<page_down>",
+        "insert": "<insert>",
+        "delete": "<delete>",
+
+        # Numpad
+        "num0": "<num0>",
+        "num1": "<num1>",
+        "num2": "<num2>",
+        "num3": "<num3>",
+        "num4": "<num4>",
+        "num5": "<num5>",
+        "num6": "<num6>",
+        "num7": "<num7>",
+        "num8": "<num8>",
+        "num9": "<num9>",
+
+        "num+": "<num_add>",
+        "num-": "<num_subtract>",
+        "num*": "<num_multiply>",
+        "num/": "<num_divide>",
+    }
+
     # Ensure clean pynput format: ctrl+alt+z -> <ctrl>+<alt>+z
+    hotkey = hotkey.lower().replace("_", " ").strip()
     parts = hotkey.lower().split('+')
     formatted = []
     for p in parts:
-        if p in ['ctrl', 'alt', 'shift', 'win']:
+        p = p.strip()
+
+        if p in modifiers:
             formatted.append(f"<{p}>")
+        elif p in special_keys:
+            formatted.append(special_keys[p])
         else:
             formatted.append(p)
     return "+".join(formatted)
