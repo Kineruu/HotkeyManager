@@ -23,3 +23,5 @@ You can use UP and DOWN arrow to go through commands history
 
 And click enter, it SHOULD work everywhere
 Hotkey can be changed in "config.json" file.
+
+REMEMBER TO COPY THE OLD CONFIG.JSON FILE AND PASTE IT INTO THE NEW FOLDER IF YOU ARE UPDATING THE PROGRAM!!
