@@ -2,15 +2,43 @@
 # Imports
 from pynput import keyboard as kb 
 from PIL import Image
-import webbrowser, threading, json, win32gui, win32con, win32api, win32process, os, pystray, sys
+import win32gui, win32con, win32api, win32process
+import webbrowser, threading, json, os, pystray, sys, traceback, datetime
 import customtkinter as ct
 
 BASE_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
+LOG_DIR = os.path.join(BASE_PATH, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
+def log_error(t="ERROR", exc=None):
+    path = os.path.join(LOG_DIR, "error.log")
+
+    with open(path, "a", encoding="utf-8") as f:
+        f.write("\n" + "=" * 60 + "\n")
+        f.write(f"[{datetime.datetime.now()}] {t}\n")
+        if exc:
+            f.write("".join(traceback.format_exception(type(exc), exc, exc.__traceback__)))
+        else:
+            f.write("No exception provided")
+
+def global_error_handler(exc_type, exc_value, exc_traceback):
+    path = os.path.join(LOG_DIR, "crash.log")
+    with open(path, "a", encoding="utf-8") as f:
+        f.write("\n" + "=-" * 40 + "\n")
+        f.write(f"[{datetime.datetime.now()}] CRASH\n")
+        traceback.print_exception(exc_type, exc_value, exc_traceback, file=f)
+sys.excepthook = global_error_handler
 
 def load_config():
     # Loading config
     with open(os.path.join(BASE_PATH, "config.json"), "r") as f: 
         return json.load(f)
+
+def safe_run(t, func):
+    try:
+        return func()
+    except Exception as e:
+        log_error(t, e)
 
 history = []
 history_number = 0
@@ -173,7 +201,7 @@ def on_enter(event=None):
     if text:
         history.append(text)
         history_number = len(history)
-    window.after(1, lambda: run(text))
+    window.after(1, lambda: safe_run("COMMAND", lambda: run(text)))
 
     return "break"
 
@@ -254,7 +282,7 @@ def start_hotkey():
         hotkey_listener.start()
 
     except Exception as e:
-        print(f"Hotkey Error: {e}")
+        log_error(f"HOTKEY FAILED: {e}")
 
 window.bind("<Escape>", lambda e: window.withdraw())
 entry_input.bind("<Return>", on_enter)
@@ -262,8 +290,9 @@ entry_input.bind("<Up>", lambda e: moving_history(1))
 entry_input.bind("<Down>", lambda e: moving_history(-1))
 
 if __name__ == "__main__":
-    start_hotkey()
-    threading.Thread(target=small_icon, daemon=True).start()
+    safe_run("HOTKEY SYSTEM", start_hotkey)
+    threading.Thread(target=lambda: safe_run("TRAY ICON", small_icon), daemon=True).start()
+    
     window.protocol("WM_DELETE_WINDOW", lambda: quit_window(None, None))
     try: 
         window.mainloop()
