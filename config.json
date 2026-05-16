@@ -8,7 +8,8 @@
         "gh": "https://github.com",
         "yt": "https://www.youtube.com",
         "rd": "https://reddit.com/",
-        "w": "https://wikipedia.com/"
+        "w": "https://wikipedia.com/",
+        "tw": "https://www.twitch.tv/"
     },
     "SEARCH": {
         "g": "https://www.google.com/search?q=",

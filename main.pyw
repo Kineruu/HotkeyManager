@@ -7,20 +7,15 @@ import customtkinter as ct
 
 BASE_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
 
-# Loading config
-with open(os.path.join(BASE_PATH, "config.json"), "r") as f: 
-    config = json.load(f)
-
-HOTKEY = config["HOTKEY"]
-DEFAULT_PREFIX = config["DEFAULT_PREFIX"]
-SEARCH = config["SEARCH"]
-SHORTCUTS = config["SHORTCUTS"]
-FOLDERS = config["FILES"]
-MAPPED_HOTKEYS = config["MAPPED_HOTKEYS"]
+def load_config():
+    # Loading config
+    with open(os.path.join(BASE_PATH, "config.json"), "r") as f: 
+        return json.load(f)
 
 history = []
 history_number = 0
 running = True
+hotkey_listener = None
 
 # Customtinker settings
 window = ct.CTk() # Setting up the window
@@ -38,7 +33,7 @@ ct.set_default_color_theme("dark-blue")
 
 def load_settings():
     import settings_window
-    settings_window.open_settings_window()
+    settings_window.open_settings_window(callback=start_hotkey)
 
 # Settings button
 settings_button = ct.CTkButton(frame, text="s", width=20, height=20, command=load_settings, fg_color="transparent", hover_color="#333333")
@@ -119,7 +114,8 @@ def focus_window_logic():
     # 6. Release Topmost so it doesn't stay stuck
     window.after(200, lambda: window.attributes("-topmost", False))
 
-def focus_window(): window.after(0, focus_window_logic)
+def focus_window(): 
+    window.after(0, focus_window_logic)
 
 # Focus window by process ID
 def focus_window_by_pid(pid):
@@ -136,7 +132,16 @@ def focus_window_by_pid(pid):
     win32gui.EnumWindows(callback, None)
 
 def run_command(text: str):
-    if not text: return
+    config = load_config()
+
+    SEARCH = config["SEARCH"]
+    SHORTCUTS = config["SHORTCUTS"]
+    FOLDERS = config["FILES"]
+    DEFAULT_PREFIX = config["DEFAULT_PREFIX"]
+
+    if not text: 
+        return
+    
     command, *rest = text.split(" ", 1)
     argument = rest[0] if rest else ""
 
@@ -146,14 +151,19 @@ def run_command(text: str):
         return
 
     # Checks whether it's a search command first (for example yt cats)
-    if command in SEARCH and argument: webbrowser.open(SEARCH[command] + argument)
+    if command in SEARCH and argument: 
+        webbrowser.open(SEARCH[command] + argument)
 
     # If it's a shortcut (gh -> github)
-    elif command in SHORTCUTS: webbrowser.open(SHORTCUTS[command])
+    elif command in SHORTCUTS: 
+        webbrowser.open(SHORTCUTS[command])
 
-    elif DEFAULT_PREFIX in SEARCH: webbrowser.open(SEARCH[DEFAULT_PREFIX] + text)
+    elif DEFAULT_PREFIX in SEARCH: 
+        webbrowser.open(SEARCH[DEFAULT_PREFIX] + text)
 
-def run(text): window.withdraw(); run_command(text)
+def run(text): 
+    window.withdraw() 
+    run_command(text)
 
 def on_enter(event=None):
     global history_number
@@ -169,7 +179,8 @@ def on_enter(event=None):
 
 def moving_history(step: int):
     global history_number
-    if not history: return
+    if not history: 
+        return
     
     history_number = max(1, min(len(history), history_number + step))
     entry_input.delete(0, "end")
@@ -222,16 +233,25 @@ def replace_hotkey(hotkey: str):
     return "+".join(formatted)
 
 def start_hotkey():
-    hotkey_map = {}
+    global hotkey_listener
     try:
+        if hotkey_listener:
+            hotkey_listener.stop()
+
+        config = load_config()
+        HOTKEY = config["HOTKEY"]
+        MAPPED_HOTKEYS = config["MAPPED_HOTKEYS"]
+
         main_hotkey = replace_hotkey(HOTKEY)
+        hotkey_map = {}
         hotkey_map[main_hotkey] = focus_window
 
         for hotkey, command in MAPPED_HOTKEYS.items():
             formatted_hotkey = replace_hotkey(hotkey)
             hotkey_map[formatted_hotkey] = lambda cmd = command: run_command(cmd)
-        with kb.GlobalHotKeys(hotkey_map) as h:
-            h.join()
+
+        hotkey_listener = kb.GlobalHotKeys(hotkey_map)
+        hotkey_listener.start()
 
     except Exception as e:
         print(f"Hotkey Error: {e}")
@@ -242,9 +262,11 @@ entry_input.bind("<Up>", lambda e: moving_history(1))
 entry_input.bind("<Down>", lambda e: moving_history(-1))
 
 if __name__ == "__main__":
-    threading.Thread(target=start_hotkey, daemon=True).start()
+    start_hotkey()
     threading.Thread(target=small_icon, daemon=True).start()
     window.protocol("WM_DELETE_WINDOW", lambda: quit_window(None, None))
-    try: window.mainloop()
-    except KeyboardInterrupt: os._exit(0)
+    try: 
+        window.mainloop()
+    except KeyboardInterrupt: 
+        os._exit(0)
     

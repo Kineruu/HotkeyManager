@@ -49,7 +49,7 @@ def add_row(section_key, container, entries):
     remove_button = ct.CTkButton(row, text="-", width=25, command=remove_row, fg_color="transparent", bg_color=buttons_colour)
     remove_button.grid(row=0, column=3, padx=5)
 
-def open_settings_window(parent=None):
+def open_settings_window(parent=None, callback=None):
     config = load_config()
     entries = {}
 
@@ -60,10 +60,6 @@ def open_settings_window(parent=None):
 
     settings_frame = ct.CTkScrollableFrame(settings_window)
     settings_frame.pack(expand=True, fill="both", padx=10, pady=(10, 0))
-
-    important_label = ct.CTkLabel(settings_frame, text="ALL CHANGES WILL APPLY \nAFTER RESTARTING THE PROGRAM")
-    important_label.pack()
-
 
     for key, value in config.items():
 
@@ -138,6 +134,10 @@ def open_settings_window(parent=None):
                 new_config[key] = value.get()
 
         save_config(new_config)
+
+        if callback:
+            callback()
+            
         settings_window.destroy()
 
     save_button = ct.CTkButton(settings_window, text="SAVE", command=on_save)
